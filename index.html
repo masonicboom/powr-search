@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Powr-Search, when Advanced Search just doesn't cut it.</title>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js'></script>
+	<link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.16/themes/flick/jquery-ui.css" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="https://raw.github.com/trentrichardson/jQuery-Timepicker-Addon/master/jquery-ui-timepicker-addon.css" />
+	<script src='https://raw.github.com/trentrichardson/jQuery-Timepicker-Addon/master/jquery-ui-timepicker-addon.js'></script>
+	
+	<script>
+	  var API_KEY = '07862f95618fc8815dcd3f532b0bea30';
+	  var API_URL = 'http://api.flickr.com/services/rest/';
+	  var API_METHOD = 'flickr.photos.search';
+	
+	  $('document').ready(function() {
+	    $('#min_taken_date').datetimepicker();
+	    $('#max_taken_date').datetimepicker();
+	    
+	    $('#search_button').click(function() {
+  	    var min_taken_date = new Date( $('#min_taken_date').val() ).valueOf();
+  	    var max_taken_date = new Date( $('#max_taken_date').val() ).valueOf();
+  	    var text = $('#text').val();
+  	    
+  	    $.getJSON(API_URL + '?jsoncallback=?', {
+  	        'api_key': API_KEY,
+            'method': API_METHOD,
+            'min_taken_date': min_taken_date,
+            'max_taken_date': max_taken_date,
+            'text': text,
+            'format': 'json'
+  	      },
+  	      function(data) {
+            console.log(data);
+            
+            $('#results').empty();
+            
+            $.each(data.photos.photo, function(index, photo) {
+              var url = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_m.jpg'
+              $('<img src="' + url + '"/>').appendTo('#results');
+            });
+        });
+  	  });
+  	  
+	  });
+	</script>
+	
+	<style>
+	  body {
+	    font-family: Courier;
+	  }
+	</style>
+</head>
+
+<body>
+
+Min taken: <input id='min_taken_date' /><br/>
+Max taken: <input id='max_taken_date' /><br/>
+Txt query: <input id='text' /><br/>
+<input id='search_button' type='submit' value='POWR SEARCH'>
+
+<div id='results'></div>
+
+</body>
+</html>
